@@ -9,8 +9,7 @@ on:
       - main
 
 jobs:
-  setup:
-    name: Setup Flutter
+  flutter-ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,49 +19,24 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 'stable'
+        flutter-version: '3.13.5' # Replace with the latest stable version
+
+    - name: Upgrade Flutter
+      run: flutter upgrade
 
     - name: Install dependencies
       run: flutter pub get
 
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    needs: setup
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: 'stable'
+    - name: Clear Flutter Cache
+      run: flutter clean
 
     - name: Run Tests
       run: flutter test
 
-  build:
-    name: Build Flutter App
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: 'stable'
-
-    - name: Install dependencies
-      run: flutter pub get
-
     - name: Build APK
       run: flutter build apk --release
 
-    - name: Upload Build Artifacts
+    - name: Upload APK
       uses: actions/upload-artifact@v3
       with:
         name: release-apk
